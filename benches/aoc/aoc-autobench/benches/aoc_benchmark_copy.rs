@@ -28,9 +28,9 @@ fn aoc_benchmark(c: &mut Criterion) {
         group.bench_function("base", move |b| b.iter(|| runner.bench(black_box)));
     }
     {
-        let runner = Factory::day1_part1_bheap(input_day1.clone())
-            .expect("failed to generate input for bheap");
-        group.bench_function("bheap", move |b| b.iter(|| runner.bench(black_box)));
+        let runner = Factory::day1_part1_d1p1radixsort(input_day1.clone())
+            .expect("failed to generate input for d1p1radixsort");
+        group.bench_function("d1p1radixsort", move |b| b.iter(|| runner.bench(black_box)));
     }
 
     group.finish();
