@@ -13,7 +13,11 @@ aoc-runner-derive = "0.3.0"
 criterion = { version = "2.7.2", package = "codspeed-criterion-compat" }
 solution = { git = "https://github.com/enigma/aoc2024", version = "0.1.0", package = "aoc2024" }
 
+
 [[bench]]
-name = "aoc_bench"
+name = "main"
 harness = false
-path = "target/aoc/aoc-autobench/benches/aoc_benchmark.rs"
+path = "benches/aoc/aoc-autobench/benches/aoc_benchmark_copy.rs"
+
+[toolchain]
+channel = "nightly"
