@@ -3,7 +3,7 @@ use std::collections::BinaryHeap;
 const SIZE: usize = 1000;
 
 #[aoc(day1, part1, base)]
-pub fn part1og(input: &str) -> u32 {
+pub fn part1(input: &str) -> u32 {
     let mut lhs = [0u32; SIZE];
     let mut rhs = [0u32; SIZE];
 
@@ -20,7 +20,7 @@ pub fn part1og(input: &str) -> u32 {
 }
 
 #[aoc(day1, part1, bheap)]
-pub fn part1(input: &str) -> u32 {
+pub fn part1bheap(input: &str) -> u32 {
     let mut lhs = BinaryHeap::with_capacity(SIZE);
     let mut rhs = BinaryHeap::with_capacity(SIZE);
 
@@ -63,8 +63,8 @@ mod tests {
 
     #[test]
     fn test_part1() {
-        assert_eq!(part1og(INPUT), 1646452);
         assert_eq!(part1(INPUT), 1646452);
+        assert_eq!(part1bheap(INPUT), 1646452);
     }
 
     #[test]
