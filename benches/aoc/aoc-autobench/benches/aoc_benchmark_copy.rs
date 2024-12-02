@@ -14,14 +14,41 @@ fn black_box(t: &dyn Display) {
 }
 
 fn aoc_benchmark(c: &mut Criterion) {
-    
+
+    let input_day1 = ArcStr::from(include_str!("../../../../input/2024/day1.txt"));
+
     let input_day2 = ArcStr::from(include_str!("../../../../input/2024/day2.txt"));
 
 
-    
+    let mut group = c.benchmark_group("Day1 - Part1");
+
+    {
+        let runner = Factory::day1_part1_base(input_day1.clone())
+            .expect("failed to generate input for base");
+        group.bench_function("base", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day1 - Part1");
+
+    {
+        let runner = Factory::day1_part1_d1p1radixsort(input_day1.clone())
+            .expect("failed to generate input for d1p1radixsort");
+        group.bench_function("d1p1radixsort", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day1 - Part2");
+
+    {
+        let runner = Factory::day1_part2_base(input_day1.clone())
+            .expect("failed to generate input for base");
+        group.bench_function("base", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
     let mut group = c.benchmark_group("Day2 - Part1");
 
-    
     {
         let runner = Factory::day2_part1_base(input_day2.clone())
             .expect("failed to generate input for base");
@@ -31,7 +58,6 @@ fn aoc_benchmark(c: &mut Criterion) {
     group.finish();
     let mut group = c.benchmark_group("Day2 - Part2");
 
-    
     {
         let runner = Factory::day2_part2_base(input_day2.clone())
             .expect("failed to generate input for base");
@@ -44,11 +70,10 @@ fn aoc_benchmark(c: &mut Criterion) {
 #[allow(unused_variables)]
 #[allow(dead_code)]
 fn input_benchmark(c: &mut Criterion) {
-    
+    let input_day1 = ArcStr::from(include_str!("../../../../input/2024/day1.txt"));
     let input_day2 = ArcStr::from(include_str!("../../../../input/2024/day2.txt"));
 
 
-    
 }
 
 criterion_group!(benches, aoc_benchmark);

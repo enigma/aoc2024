@@ -1,0 +1,61 @@
+{:tasks {:require ([babashka.fs :as fs])
+         genbench
+         (let [rust-files (babashka.fs/glob "src" "day*.rs")
+               parts
+               (->>
+                (flatten (into [] (for [file rust-files]
+                            (let [content (-> file .normalize .toString slurp)
+                                  find-aoc (re-pattern "#\\[aoc\\(day(\\d+), part(\\d+)(?:, (\\w+))?\\)]")
+                                  matches (re-seq find-aoc content)]
+                              (for [[_ day part name] matches]
+                                {:day day :part part :name name})))))
+                (sort-by :name)
+                (sort-by :part)
+                (sort-by :day)
+                )
+
+               bench-content
+               (str "#[macro_use]\n"
+                    "extern crate criterion;\n"
+                    "extern crate aoc2024;\n" 
+                    "extern crate aoc_runner;\n\n"
+                    "use aoc2024::*;\n"
+                    "use aoc_runner::ArcStr;\n"
+                    "use criterion::Criterion;\n"
+                    "use std::fmt::Display;\n\n"
+                    "#[inline]\n"
+                    "fn black_box(t: &dyn Display) {\n"
+                    "    criterion::black_box(t);\n"
+                    "}\n\n"
+                    "fn aoc_benchmark(c: &mut Criterion) {\n"
+                    (apply str
+                      (for [day (distinct (map :day (flatten parts)))]
+                        (str "\n    let input_day" day " = ArcStr::from(include_str!(\"../../../../input/2024/day" day ".txt\"));\n")))
+                    "\n\n"
+                    (apply str
+                      (for [{:keys [day part name]} (flatten parts)]
+                        (let [group-name (str "Day" day " - Part" part)
+                              fn-name (or name "base")]
+                          (str "    let mut group = c.benchmark_group(\"" group-name "\");\n\n"
+                               "    {\n"
+                               "        let runner = Factory::day" day "_part" part "_" fn-name "(input_day" day ".clone())\n"
+                               "            .expect(\"failed to generate input for " fn-name "\");\n"
+                               "        group.bench_function(\"" fn-name "\", move |b| b.iter(|| runner.bench(black_box)));\n"
+                               "    }\n\n"
+                               "    group.finish();\n"))))
+                    "}\n\n"
+                    "#[allow(unused_variables)]\n"
+                    "#[allow(dead_code)]\n"
+                    "fn input_benchmark(c: &mut Criterion) {\n"
+                    (apply str
+                      (for [day (distinct (map :day (flatten parts)))]
+                        (str "    let input_day" day " = ArcStr::from(include_str!(\"../../../../input/2024/day" day ".txt\"));\n")))
+                    "\n\n"
+                    "}\n\n"
+                    "criterion_group!(benches, aoc_benchmark);\n"
+                    "criterion_main!(benches);\n")
+               _ (spit "benches/aoc/aoc-autobench/benches/aoc_benchmark_copy.rs" bench-content)
+               ]
+               (println parts)
+           )
+         }}
