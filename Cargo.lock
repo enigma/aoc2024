@@ -60,6 +60,7 @@ dependencies = [
  "aoc-runner-derive",
  "aoc2024 0.1.0 (git+https://github.com/enigma/aoc2024)",
  "codspeed-criterion-compat",
+ "regex",
 ]
 
 [[package]]

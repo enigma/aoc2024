@@ -19,6 +19,8 @@ fn aoc_benchmark(c: &mut Criterion) {
 
     let input_day2 = ArcStr::from(include_str!("../../../../input/2024/day2.txt"));
 
+    let input_day3 = ArcStr::from(include_str!("../../../../input/2024/day3.txt"));
+
 
     let mut group = c.benchmark_group("Day1 - Part1");
 
@@ -65,6 +67,42 @@ fn aoc_benchmark(c: &mut Criterion) {
     }
 
     group.finish();
+    let mut group = c.benchmark_group("Day3 - Part1");
+
+    {
+        let runner = Factory::day3_part1_base(input_day3.clone())
+            .expect("failed to generate input for base");
+        group.bench_function("base", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day3 - Part1");
+
+    {
+        let runner = Factory::day3_part1_regex(input_day3.clone())
+            .expect("failed to generate input for regex");
+        group.bench_function("regex", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day3 - Part2");
+
+    {
+        let runner = Factory::day3_part2_base(input_day3.clone())
+            .expect("failed to generate input for base");
+        group.bench_function("base", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day3 - Part2");
+
+    {
+        let runner = Factory::day3_part2_regex(input_day3.clone())
+            .expect("failed to generate input for regex");
+        group.bench_function("regex", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
 }
 
 #[allow(unused_variables)]
@@ -72,6 +110,7 @@ fn aoc_benchmark(c: &mut Criterion) {
 fn input_benchmark(c: &mut Criterion) {
     let input_day1 = ArcStr::from(include_str!("../../../../input/2024/day1.txt"));
     let input_day2 = ArcStr::from(include_str!("../../../../input/2024/day2.txt"));
+    let input_day3 = ArcStr::from(include_str!("../../../../input/2024/day3.txt"));
 
 
 }
