@@ -1,4 +1,5 @@
 use aoc_runner_derive::aoc;
+use arrayvec::ArrayVec;
 
 fn solve_dfs(line: &str, part2: bool) -> u64 {
     if let Some((sgoal, sterms)) = line.split_once(':') {
@@ -6,30 +7,33 @@ fn solve_dfs(line: &str, part2: bool) -> u64 {
             .as_bytes()
             .iter()
             .fold(0u64, |acc, b| acc * 10 + (b - b'0') as u64);
-        let terms: Vec<u64> = sterms
+        let mut terms = [0u64; 12];
+        let mut termscount = 0;
+        sterms
             .split_ascii_whitespace()
-            .map(|t| {
-                t.as_bytes()
+            .enumerate()
+            .for_each(|(i, t)| unsafe {
+                termscount += 1;
+                *terms.get_unchecked_mut(i) = t
+                    .as_bytes()
                     .iter()
                     .fold(0u64, |acc, b| acc * 10 + (b - b'0') as u64)
-            })
-            .collect();
-        let termslog10 = if part2 {
-            terms
-                .iter()
-                .map(|&t| (t as f64).log10().floor() as u32)
+            });
+        let mut termslog10 = [0u64; 12];
+        if part2 {
+            (0..termscount)
+                .map(|i| (*unsafe { terms.get_unchecked(i) } as f64).log10().floor() as u32)
                 .map(|log10| 10u64.pow(log10 + 1))
-                .collect()
-        } else {
-            Vec::new()
-        };
-        let mut fringe = Vec::with_capacity(12);
+                .enumerate()
+                .for_each(|(i, mul)| unsafe { *termslog10.get_unchecked_mut(i) = mul });
+        }
+        let mut fringe = ArrayVec::<(usize, u64), 24>::new();
         fringe.push((1usize, terms[0]));
         while let Some((idx, partial)) = fringe.pop() {
             if partial > goal {
                 continue;
             }
-            if idx >= terms.len() {
+            if idx >= termscount {
                 if partial == goal {
                     return goal;
                 }
