@@ -1,7 +1,7 @@
 use aoc_runner_derive::aoc;
 use arrayvec::ArrayVec;
 
-#[aoc(day8, part1)]
+#[aoc(day8, part1, base)]
 pub fn part1(input: &str) -> u64 {
     let mut antennas: [ArrayVec<(usize, usize), 5>; 128] = std::array::from_fn(|_| ArrayVec::new());
     input.lines().enumerate().for_each(|(y, line)| {
@@ -41,7 +41,7 @@ pub fn part1(input: &str) -> u64 {
     count
 }
 
-#[aoc(day8, part2)]
+#[aoc(day8, part2, base)]
 pub fn part2(input: &str) -> u64 {
     let mut antennas: [ArrayVec<(usize, usize), 5>; 128] = std::array::from_fn(|_| ArrayVec::new());
     input.lines().enumerate().for_each(|(y, line)| {
