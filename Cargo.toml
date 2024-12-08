@@ -19,7 +19,7 @@ solution = { git = "https://github.com/enigma/aoc2024", version = "0.1.0", packa
 [[bench]]
 name = "main"
 harness = false
-path = "benches/aoc/aoc-autobench/benches/aoc_benchmark_copy.rs"
+path = "benches/aoc_bench.rs"
 
 [toolchain]
 channel = "nightly"

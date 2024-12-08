@@ -15,13 +15,13 @@ fn black_box(t: &dyn Display) {
 
 fn aoc_benchmark(c: &mut Criterion) {
 
-    let input_day1 = ArcStr::from(include_str!("../../../../input/2024/day1.txt"));
+    let input_day1 = ArcStr::from(include_str!("../input/2024/day1.txt"));
 
-    let input_day2 = ArcStr::from(include_str!("../../../../input/2024/day2.txt"));
+    let input_day2 = ArcStr::from(include_str!("../input/2024/day2.txt"));
 
-    let input_day3 = ArcStr::from(include_str!("../../../../input/2024/day3.txt"));
+    let input_day3 = ArcStr::from(include_str!("../input/2024/day3.txt"));
 
-    let input_day7 = ArcStr::from(include_str!("../../../../input/2024/day7.txt"));
+    let input_day7 = ArcStr::from(include_str!("../input/2024/day7.txt"));
 
 
     let mut group = c.benchmark_group("Day1 - Part1");
@@ -146,10 +146,10 @@ fn aoc_benchmark(c: &mut Criterion) {
 #[allow(unused_variables)]
 #[allow(dead_code)]
 fn input_benchmark(c: &mut Criterion) {
-    let input_day1 = ArcStr::from(include_str!("../../../../input/2024/day1.txt"));
-    let input_day2 = ArcStr::from(include_str!("../../../../input/2024/day2.txt"));
-    let input_day3 = ArcStr::from(include_str!("../../../../input/2024/day3.txt"));
-    let input_day7 = ArcStr::from(include_str!("../../../../input/2024/day7.txt"));
+    let input_day1 = ArcStr::from(include_str!("../input/2024/day1.txt"));
+    let input_day2 = ArcStr::from(include_str!("../input/2024/day2.txt"));
+    let input_day3 = ArcStr::from(include_str!("../input/2024/day3.txt"));
+    let input_day7 = ArcStr::from(include_str!("../input/2024/day7.txt"));
 
 
 }

@@ -30,7 +30,7 @@
                     "fn aoc_benchmark(c: &mut Criterion) {\n"
                     (apply str
                       (for [day (distinct (map :day (flatten parts)))]
-                        (str "\n    let input_day" day " = ArcStr::from(include_str!(\"../../../../input/2024/day" day ".txt\"));\n")))
+                        (str "\n    let input_day" day " = ArcStr::from(include_str!(\"../input/2024/day" day ".txt\"));\n")))
                     "\n\n"
                     (apply str
                       (for [{:keys [day part name]} (flatten parts)]
@@ -49,12 +49,12 @@
                     "fn input_benchmark(c: &mut Criterion) {\n"
                     (apply str
                       (for [day (distinct (map :day (flatten parts)))]
-                        (str "    let input_day" day " = ArcStr::from(include_str!(\"../../../../input/2024/day" day ".txt\"));\n")))
+                        (str "    let input_day" day " = ArcStr::from(include_str!(\"../input/2024/day" day ".txt\"));\n")))
                     "\n\n"
                     "}\n\n"
                     "criterion_group!(benches, aoc_benchmark);\n"
                     "criterion_main!(benches);\n")
-               _ (spit "benches/aoc/aoc-autobench/benches/aoc_benchmark_copy.rs" bench-content)
+               _ (spit "benches/aoc_bench.rs" bench-content)
                ]
                (println parts)
            )
