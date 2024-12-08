@@ -21,6 +21,8 @@ fn aoc_benchmark(c: &mut Criterion) {
 
     let input_day3 = ArcStr::from(include_str!("../../../../input/2024/day3.txt"));
 
+    let input_day7 = ArcStr::from(include_str!("../../../../input/2024/day7.txt"));
+
 
     let mut group = c.benchmark_group("Day1 - Part1");
 
@@ -103,6 +105,42 @@ fn aoc_benchmark(c: &mut Criterion) {
     }
 
     group.finish();
+    let mut group = c.benchmark_group("Day7 - Part1");
+
+    {
+        let runner = Factory::day7_part1_base(input_day7.clone())
+            .expect("failed to generate input for base");
+        group.bench_function("base", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day7 - Part1");
+
+    {
+        let runner = Factory::day7_part1_recurse(input_day7.clone())
+            .expect("failed to generate input for recurse");
+        group.bench_function("recurse", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day7 - Part2");
+
+    {
+        let runner = Factory::day7_part2_base(input_day7.clone())
+            .expect("failed to generate input for base");
+        group.bench_function("base", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day7 - Part2");
+
+    {
+        let runner = Factory::day7_part2_recurse(input_day7.clone())
+            .expect("failed to generate input for recurse");
+        group.bench_function("recurse", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
 }
 
 #[allow(unused_variables)]
@@ -111,6 +149,7 @@ fn input_benchmark(c: &mut Criterion) {
     let input_day1 = ArcStr::from(include_str!("../../../../input/2024/day1.txt"));
     let input_day2 = ArcStr::from(include_str!("../../../../input/2024/day2.txt"));
     let input_day3 = ArcStr::from(include_str!("../../../../input/2024/day3.txt"));
+    let input_day7 = ArcStr::from(include_str!("../../../../input/2024/day7.txt"));
 
 
 }
