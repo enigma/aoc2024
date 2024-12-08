@@ -96,20 +96,69 @@ fn solve_recurse(line: &str, part2: bool) -> u64 {
     0
 }
 
+fn solve_dfs_end(line: &str, part2: bool) -> u64 {
+    if let Some((sgoal, sterms)) = line.split_once(':') {
+        let goal = sgoal
+            .as_bytes()
+            .iter()
+            .fold(0u64, |acc, b| acc * 10 + (b - b'0') as u64);
+        let mut terms = [0u64; 12];
+        let mut termscount = 0;
+        sterms
+            .split_ascii_whitespace()
+            .enumerate()
+            .for_each(|(i, t)| unsafe {
+                termscount += 1;
+                *terms.get_unchecked_mut(i) = t
+                    .as_bytes()
+                    .iter()
+                    .fold(0u64, |acc, b| acc * 10 + (b - b'0') as u64)
+            });
+        let mut termslog10 = [0u64; 12];
+        if part2 {
+            (0..termscount)
+                .map(|i| (*unsafe { terms.get_unchecked(i) } as f64).log10().floor() as u32)
+                .map(|log10| 10u64.pow(log10 + 1))
+                .enumerate()
+                .for_each(|(i, mul)| unsafe { *termslog10.get_unchecked_mut(i) = mul });
+        }
+        let mut fringe = ArrayVec::<(usize, u64), 24>::new();
+        fringe.push((termscount, goal));
+        while let Some((idx, partial)) = fringe.pop() {
+            if idx == 0 {
+                if partial == 0 {
+                    return goal;
+                }
+                continue;
+            }
+            let idx = idx - 1;
+            let term = *unsafe { terms.get_unchecked(idx) };
+            if term <= partial {
+                fringe.push((idx, partial - term));
+            }
+            if partial % term == 0 {
+                fringe.push((idx, partial / term));
+            }
+            if part2 {
+                let mul = *unsafe { termslog10.get_unchecked(idx) };
+                if partial % mul == term {
+                    fringe.push((idx, (partial - term) / mul));
+                }
+            }
+        }
+        return 0;
+    }
+    0
+}
+
 #[aoc(day7, part1, base)]
 pub fn part1(input: &str) -> u64 {
-    input.lines().map(|line| solve_dfs(line, false)).sum()
+    input.lines().map(|line| solve_dfs_end(line, false)).sum()
 }
 
 #[aoc(day7, part2, base)]
 pub fn part2(input: &str) -> u64 {
-    input
-        .lines()
-        .map(|line| {
-            let s1 = solve_dfs(line, false);
-            return if s1 == 0 { solve_dfs(line, true) } else { s1 };
-        })
-        .sum()
+    input.lines().map(|line| solve_dfs_end(line, true)).sum()
 }
 
 #[aoc(day7, part1, recurse)]
