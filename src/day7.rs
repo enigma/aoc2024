@@ -1,88 +1,32 @@
 use aoc_runner_derive::aoc;
 use arrayvec::ArrayVec;
 
-fn solve_dfs(line: &str, part2: bool) -> u64 {
-    if let Some((sgoal, sterms)) = line.split_once(':') {
-        let goal = sgoal
-            .as_bytes()
-            .iter()
-            .fold(0u64, |acc, b| acc * 10 + (b - b'0') as u64);
-        let mut terms = [0u64; 12];
-        let mut termscount = 0;
-        sterms
-            .split_ascii_whitespace()
-            .enumerate()
-            .for_each(|(i, t)| unsafe {
-                termscount += 1;
-                *terms.get_unchecked_mut(i) = t
-                    .as_bytes()
-                    .iter()
-                    .fold(0u64, |acc, b| acc * 10 + (b - b'0') as u64)
-            });
-        let mut termslog10 = [0u64; 12];
+fn recurse(goal: u64, partial: u64, terms: &[u64], part2: bool) -> u64 {
+    if terms.is_empty() {
+        return if partial == 0 { goal } else { 0 };
+    }
+    if let Some(&term) = terms.last() {
+        let rest = &terms[0..terms.len() - 1];
+        if partial % term == 0 && recurse(goal, partial / term, rest, part2) > 0 {
+            return goal;
+        }
+        if partial >= term && recurse(goal, partial - term, rest, part2) > 0 {
+            return goal;
+        }
         if part2 {
-            (0..termscount)
-                .map(|i| (*unsafe { terms.get_unchecked(i) } as f64).log10().floor() as u32)
-                .map(|log10| 10u64.pow(log10 + 1))
-                .enumerate()
-                .for_each(|(i, mul)| unsafe { *termslog10.get_unchecked_mut(i) = mul });
-        }
-        let mut fringe = ArrayVec::<(usize, u64), 24>::new();
-        fringe.push((1usize, terms[0]));
-        while let Some((idx, partial)) = fringe.pop() {
-            if partial > goal {
-                continue;
-            }
-            if idx >= termscount {
-                if partial == goal {
-                    return goal;
-                }
-                continue;
-            }
-            let term = unsafe { terms.get_unchecked(idx) };
-            fringe.push((idx + 1, partial * term));
-            fringe.push((idx + 1, partial + term));
-            if part2 {
-                let mul = unsafe { termslog10.get_unchecked(idx) };
-                fringe.push((idx + 1, partial * mul + term));
+            let mul = 10u64.pow(1 + (term as f64).log10().floor() as u32);
+            if partial % mul == term && recurse(goal, (partial - term) / mul, rest, part2) > 0 {
+                return goal;
             }
         }
         return 0;
+    } else {
+        if partial == 0 {
+            goal
+        } else {
+            0
+        }
     }
-    0
-}
-
-fn recurse(goal: u64, partial: u64, sterms: &str, part2: bool) -> u64 {
-    if partial > goal {
-        return 0;
-    }
-    if sterms.is_empty() {
-        return if partial == goal { goal } else { 0 };
-    }
-    let (sterm, rest) = match sterms.split_once(' ') {
-        Some((term, rest)) => (term, rest),
-        None => (sterms, ""),
-    };
-    let term = sterm
-        .as_bytes()
-        .iter()
-        .fold(0u64, |acc, b| acc * 10 + (b - b'0') as u64);
-    let times = recurse(goal, partial * term, rest, part2);
-    if times > 0 {
-        return times;
-    }
-    let plus = recurse(goal, partial + term, rest, part2);
-    if plus > 0 {
-        return plus;
-    }
-    if part2 {
-        let term = sterm
-            .as_bytes()
-            .iter()
-            .fold(partial, |acc, b| acc * 10 + (b - b'0') as u64);
-        return recurse(goal, term, rest, part2);
-    }
-    0
 }
 
 fn solve_recurse(line: &str, part2: bool) -> u64 {
@@ -91,7 +35,15 @@ fn solve_recurse(line: &str, part2: bool) -> u64 {
             .as_bytes()
             .iter()
             .fold(0u64, |acc, b| acc * 10 + (b - b'0') as u64);
-        return recurse(goal, 0, sterms, part2);
+        let mut terms = ArrayVec::<u64, 12>::new();
+        sterms.split_ascii_whitespace().for_each(|t| {
+            terms.push(
+                t.as_bytes()
+                    .iter()
+                    .fold(0u64, |acc, b| acc * 10 + (b - b'0') as u64),
+            );
+        });
+        return recurse(goal, goal, &terms, part2);
     }
     0
 }
