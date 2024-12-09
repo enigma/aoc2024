@@ -67,10 +67,12 @@ dependencies = [
 [[package]]
 name = "aoc2024"
 version = "0.1.0"
-source = "git+https://github.com/enigma/aoc2024#8e1a7ee18fad938c85bfbbdddfb5657150e4c179"
+source = "git+https://github.com/enigma/aoc2024#713db5d2914453b8b4ba96867d88ee62bb71ed39"
 dependencies = [
  "aoc-runner",
  "aoc-runner-derive",
+ "arrayvec",
+ "regex",
 ]
 
 [[package]]
