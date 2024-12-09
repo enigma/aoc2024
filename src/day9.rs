@@ -47,7 +47,7 @@ fn score(files: &[File]) -> u64 {
         .sum()
 }
 
-#[aoc(day9, part1)]
+#[aoc(day9, part1, d09p1)]
 pub fn part1(input: &str) -> u64 {
     let (mut files, mut gaps) = parse(input);
     while let Some(mut gap) = gaps.pop_front() {
@@ -86,7 +86,7 @@ pub fn part1(input: &str) -> u64 {
     score(files.make_contiguous())
 }
 
-#[aoc(day9, part2)]
+#[aoc(day9, part2, d09p2)]
 pub fn part2(input: &str) -> u64 {
     let (mut files, ogaps) = parse(input);
     let mut gaps = [(); 10].map(|_| VecDeque::<Gap>::with_capacity(MAX_SIZE / 20));
