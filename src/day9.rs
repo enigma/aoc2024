@@ -119,7 +119,6 @@ pub fn part2(input: &str) -> u64 {
                         break;
                     }
                 }
-                // gaps[earliest.size] = gapd;
             }
         } else {
             files.push_back(file);
