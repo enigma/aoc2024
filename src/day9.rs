@@ -1,6 +1,9 @@
 use aoc_runner_derive::aoc;
 use arrayvec::ArrayVec;
-use std::{borrow::BorrowMut, collections::VecDeque};
+use std::{
+    borrow::BorrowMut,
+    collections::{BinaryHeap, VecDeque},
+};
 
 struct File {
     size: usize,
@@ -8,9 +11,26 @@ struct File {
     start: usize,
 }
 
+#[derive(Eq, PartialEq)]
 struct Gap {
     size: usize,
     start: usize,
+}
+impl Ord for Gap {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        // Sort by start position in descending order
+        other
+            .start
+            .cmp(&self.start)
+            // Then by size in descending order
+            .then(other.size.cmp(&self.size))
+    }
+}
+
+impl PartialOrd for Gap {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 const MAX_SIZE: usize = 10_000;
@@ -89,36 +109,29 @@ pub fn part1(input: &str) -> u64 {
 #[aoc(day9, part2, d09p2)]
 pub fn part2(input: &str) -> u64 {
     let (mut files, ogaps) = parse(input);
-    let mut gaps = [(); 10].map(|_| VecDeque::<Gap>::with_capacity(MAX_SIZE / 20));
+    let mut gaps = [(); 10].map(|_| BinaryHeap::<Gap>::new());
     for gap in ogaps {
-        gaps[gap.size].push_back(gap);
+        gaps[gap.size].push(gap);
     }
     let mut moved = ArrayVec::<File, MAX_SIZE>::new();
     while let Some(mut file) = files.pop_back() {
         let earliest = gaps[file.size..]
             .iter()
             .filter(|gd| !gd.is_empty())
-            .flat_map(|gd| gd.get(0))
+            .flat_map(|gd| gd.peek())
             .min_by_key(|gap| gap.start);
         if let Some(earliest) = earliest {
             if earliest.start >= file.start + file.size {
                 moved.push(file);
             } else {
-                let mut earliest = gaps[earliest.size].pop_front().unwrap();
+                let mut earliest = gaps[earliest.size].pop().unwrap();
                 file.start = earliest.start;
                 let leftovers = earliest.size - file.size;
                 earliest.size = leftovers;
                 earliest.start += file.size;
                 moved.push(file);
                 let gapd = gaps[leftovers].borrow_mut();
-                gapd.push_front(earliest);
-                for i in 1..gapd.len() {
-                    if gapd[i].start < gapd[i - 1].start {
-                        gapd.swap(i, i - 1);
-                    } else {
-                        break;
-                    }
-                }
+                gapd.push(earliest);
             }
         } else {
             files.push_back(file);
