@@ -1,3 +1,7 @@
+#![feature(portable_simd)]
+#![feature(avx512_target_feature)]
+#![feature(slice_ptr_get)]
+#![feature(array_ptr_get)]
 extern crate aoc_runner;
 
 #[macro_use]

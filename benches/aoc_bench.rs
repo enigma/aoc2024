@@ -124,12 +124,30 @@ fn aoc_benchmark(c: &mut Criterion) {
     }
 
     group.finish();
+    let mut group = c.benchmark_group("Day13 - Part1");
+
+    {
+        let runner = Factory::day13_part1_d13p1simd(input_day13.clone())
+            .expect("failed to generate input for d13p1simd");
+        group.bench_function("d13p1simd", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
     let mut group = c.benchmark_group("Day13 - Part2");
 
     {
         let runner = Factory::day13_part2_d13p2(input_day13.clone())
             .expect("failed to generate input for d13p2");
         group.bench_function("d13p2", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day13 - Part2");
+
+    {
+        let runner = Factory::day13_part2_d13p2simd(input_day13.clone())
+            .expect("failed to generate input for d13p2simd");
+        group.bench_function("d13p2simd", move |b| b.iter(|| runner.bench(black_box)));
     }
 
     group.finish();

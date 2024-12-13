@@ -1,4 +1,6 @@
 use aoc_runner_derive::aoc;
+use std::simd::prelude::SimdUint;
+use std::simd::Simd;
 
 type Int = i64;
 type Coord = (Int, Int);
@@ -20,7 +22,6 @@ fn parse_button(line: &str, skipping: usize) -> Coord {
     let y = xx.next().unwrap();
     (parse_int(&x[..x.len() - 1]), parse_int(y))
 }
-
 #[inline(always)]
 fn parse_button2(line: &[u8]) -> Coord {
     let lhs_msd = unsafe { line.get_unchecked(12) } - b'0';
@@ -77,6 +78,49 @@ fn part2(input: &str) -> Int {
     solve(input, 10000000000000)
 }
 
+#[inline(always)]
+fn parse_button2_simd(line: &[u8]) -> Coord {
+    // We know the positions we want are at indices 12,13 and 18,19
+    let digits = Simd::from_slice(&line[12..20]); // Load 8 bytes
+    let ascii_zero = Simd::splat(b'0');
+
+    // Convert ASCII to numbers by subtracting '0'
+    let numbers = digits - ascii_zero;
+    // Extract the values we need
+    let arr: [u8; 8] = numbers.to_array();
+    let lhs = (arr[0] * 10 + arr[1]) as Int;
+    let rhs = (arr[6] * 10 + arr[7]) as Int;
+
+    (lhs, rhs)
+}
+fn solve_simd(input: &str, extra: Int) -> Int {
+    let mut total = 0;
+    for block in input.trim_ascii_end().split("\n\n") {
+        let mut lines = block.lines();
+        let a_line = lines.next().unwrap();
+        let b_line = lines.next().unwrap();
+        let c_line = lines.next().unwrap();
+
+        let a = parse_button2_simd(a_line.as_bytes());
+        let b = parse_button2_simd(b_line.as_bytes());
+        let mut c = parse_button(c_line, 1);
+        c.0 += extra;
+        c.1 += extra;
+        total += solve_one(a, b, c)
+    }
+    total
+}
+
+#[aoc(day13, part1, d13p1simd)]
+fn part1simd(input: &str) -> Int {
+    solve_simd(input, 0)
+}
+
+#[aoc(day13, part2, d13p2simd)]
+fn part2simd(input: &str) -> Int {
+    solve_simd(input, 10000000000000)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -85,10 +129,12 @@ mod tests {
     #[test]
     fn part1_example() {
         assert_eq!(part1(INPUT), 31552);
+        assert_eq!(part1simd(INPUT), 31552);
     }
 
     #[test]
     fn part2_example() {
         assert_eq!(part2(INPUT), 95273925552482);
+        assert_eq!(part2simd(INPUT), 95273925552482);
     }
 }
