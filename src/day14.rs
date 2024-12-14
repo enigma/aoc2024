@@ -1,4 +1,5 @@
 use aoc_runner_derive::aoc;
+use arrayvec::ArrayVec;
 
 type Int = i64;
 type Coord = (Int, Int);
@@ -66,8 +67,9 @@ fn part1(input: &str) -> u32 {
 #[aoc(day14, part2, d14p2)]
 fn part2(input: &str) -> u32 {
     let mut grid = [[0 as Int; W]; H];
+    let robots: ArrayVec<(Coord, Coord), 500> = parse_input(input).collect();
     for times in 1..100_000 {
-        for (p, v) in parse_input(input) {
+        for &(p, v) in robots.iter() {
             let (x, y) = predict(p, v, times);
             grid[y][x] = times;
             let k = 10;
