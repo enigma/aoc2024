@@ -1,5 +1,4 @@
 use aoc_runner_derive::aoc;
-use std::simd::prelude::SimdUint;
 use std::simd::Simd;
 
 type Int = i64;
