@@ -1,5 +1,8 @@
 use aoc_runner_derive::aoc;
 use arrayvec::ArrayVec;
+use std::simd::cmp::SimdPartialOrd;
+use std::simd::prelude::SimdPartialEq;
+use std::simd::Simd;
 
 type Int = i64;
 type Coord = (Int, Int);
@@ -68,13 +71,86 @@ fn part1(input: &str) -> u32 {
 fn part2(input: &str) -> u32 {
     let mut grid = [[0 as Int; W]; H];
     let robots: ArrayVec<(Coord, Coord), 500> = parse_input(input).collect();
-    for times in 1..100_000 {
+    for times in 5_000..100_000 {
         for &(p, v) in robots.iter() {
             let (x, y) = predict(p, v, times);
             grid[y][x] = times;
             let k = 10;
             if x > k && grid[y][x - k..x].iter().all(|&x| x == times) {
                 return times as u32;
+            }
+        }
+    }
+    0
+}
+
+#[aoc(day14, part2, d14p2simd)]
+fn part2simd(input: &str) -> u32 {
+    let mut grid = [[0 as Int; W]; H];
+    let robots: ArrayVec<(Coord, Coord), 500> = parse_input(input).collect();
+
+    const LANE_SIZE: usize = 8;
+    let mut px_vecs = Vec::new();
+    let mut py_vecs = Vec::new();
+    let mut vx_vecs = Vec::new();
+    let mut vy_vecs = Vec::new();
+
+    for chunk in (0..robots.len()).step_by(LANE_SIZE) {
+        let chunk_size = (robots.len() - chunk).min(LANE_SIZE);
+        // Create temporary vectors padded with zeros
+        let mut px_chunk = vec![0; LANE_SIZE];
+        let mut py_chunk = vec![0; LANE_SIZE];
+        let mut vx_chunk = vec![0; LANE_SIZE];
+        let mut vy_chunk = vec![0; LANE_SIZE];
+
+        // Fill with actual data
+        for (i, robot) in robots[chunk..chunk + chunk_size].iter().enumerate() {
+            px_chunk[i] = robot.0 .0;
+            py_chunk[i] = robot.0 .1;
+            vx_chunk[i] = robot.1 .0;
+            vy_chunk[i] = robot.1 .1;
+        }
+
+        px_vecs.push(Simd::from_slice(&px_chunk));
+        py_vecs.push(Simd::from_slice(&py_chunk));
+        vx_vecs.push(Simd::from_slice(&vx_chunk));
+        vy_vecs.push(Simd::from_slice(&vy_chunk));
+    }
+
+    let wi_vec = Simd::<i64, 8>::splat(WI);
+    let hi_vec = Simd::<i64, 8>::splat(HI);
+    for times in 5_000..10_000 {
+        let times_vec = Simd::<i64, 8>::splat(times);
+        for i in 0..px_vecs.len() {
+            let px_vec = &px_vecs[i];
+            let py_vec = &py_vecs[i];
+            let vx_vec = &vx_vecs[i];
+            let vy_vec = &vy_vecs[i];
+
+            let x = {
+                let div = (*px_vec + (*vx_vec * times_vec)) / wi_vec;
+                let rem = (*px_vec + (*vx_vec * times_vec)) - (div * wi_vec);
+                rem + (rem.simd_lt(Simd::splat(0)).select(wi_vec, Simd::splat(0)))
+            };
+            let y = {
+                let div = (*py_vec + (*vy_vec * times_vec)) / hi_vec;
+                let rem = (*py_vec + (*vy_vec * times_vec)) - (div * hi_vec);
+                rem + (rem.simd_lt(Simd::splat(0)).select(hi_vec, Simd::splat(0)))
+            };
+
+            for j in 0..8 {
+                let x_val = x[j];
+                let y_val = y[j];
+                if x_val >= 0 && x_val < WI && y_val >= 0 && y_val < HI {
+                    grid[y_val as usize][x_val as usize] = times;
+                }
+            }
+
+            for row in grid[60..80].iter() {
+                let row_vec = Simd::<i64, 8>::from_slice(&row[56..64]);
+                if row_vec.simd_eq(times_vec).all() {
+                    return times as u32;
+                }
             }
         }
     }
@@ -94,5 +170,6 @@ mod tests {
     #[test]
     fn part2_example() {
         assert_eq!(part2(INPUT), 7709);
+        assert_eq!(part2simd(INPUT), 7709);
     }
 }
