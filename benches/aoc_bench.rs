@@ -25,6 +25,8 @@ fn aoc_benchmark(c: &mut Criterion) {
 
     let input_day14 = ArcStr::from(include_str!("../input/2024/day14.txt"));
 
+    let input_day15 = ArcStr::from(include_str!("../input/2024/day15.txt"));
+
     let input_day2 = ArcStr::from(include_str!("../input/2024/day2.txt"));
 
     let input_day3 = ArcStr::from(include_str!("../input/2024/day3.txt"));
@@ -207,6 +209,24 @@ fn aoc_benchmark(c: &mut Criterion) {
     }
 
     group.finish();
+    let mut group = c.benchmark_group("Day15 - Part1");
+
+    {
+        let runner = Factory::day15_part1_d15p1(input_day15.clone())
+            .expect("failed to generate input for d15p1");
+        group.bench_function("d15p1", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day15 - Part2");
+
+    {
+        let runner = Factory::day15_part2_d15p2(input_day15.clone())
+            .expect("failed to generate input for d15p2");
+        group.bench_function("d15p2", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
     let mut group = c.benchmark_group("Day2 - Part1");
 
     {
@@ -343,6 +363,7 @@ fn input_benchmark(c: &mut Criterion) {
     let input_day11 = ArcStr::from(include_str!("../input/2024/day11.txt"));
     let input_day13 = ArcStr::from(include_str!("../input/2024/day13.txt"));
     let input_day14 = ArcStr::from(include_str!("../input/2024/day14.txt"));
+    let input_day15 = ArcStr::from(include_str!("../input/2024/day15.txt"));
     let input_day2 = ArcStr::from(include_str!("../input/2024/day2.txt"));
     let input_day3 = ArcStr::from(include_str!("../input/2024/day3.txt"));
     let input_day7 = ArcStr::from(include_str!("../input/2024/day7.txt"));
