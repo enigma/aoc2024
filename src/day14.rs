@@ -156,6 +156,62 @@ fn part2simd(input: &str) -> u32 {
     }
     0
 }
+#[aoc(day14, part2, d14p2autovec)]
+fn part2autovec(input: &str) -> u32 {
+    let robots: ArrayVec<(Coord, Coord), 500> = parse_input(input).collect();
+    let mut px = robots
+        .iter()
+        .map(|(p, _)| p.0)
+        .collect::<ArrayVec<_, 500>>();
+    let mut py = robots
+        .iter()
+        .map(|(p, _)| p.1)
+        .collect::<ArrayVec<_, 500>>();
+    let vx = robots
+        .iter()
+        .map(|(_, v)| v.0)
+        .collect::<ArrayVec<_, 500>>();
+    let vy = robots
+        .iter()
+        .map(|(_, v)| v.1)
+        .collect::<ArrayVec<_, 500>>();
+
+    let mut it_x = 0;
+    let mut cols = [0; W + 1];
+    'outer_x: loop {
+        for (pos, vel) in px.iter_mut().zip(vx.iter()) {
+            *pos = (*pos + vel).rem_euclid(WI as _);
+        }
+        it_x += 1;
+        for &pos in &px {
+            cols[pos as usize] += 1;
+            if cols[pos as usize] >= 32 {
+                break 'outer_x;
+            }
+        }
+        cols.fill(0);
+    }
+    let mut it_y = 0;
+    let mut rows = [0; H + 1];
+    'outer_y: loop {
+        for (pos, vel) in py.iter_mut().zip(vy.iter()) {
+            *pos = (*pos + vel).rem_euclid(HI as _);
+        }
+        it_y += 1;
+        for &pos in &py {
+            rows[pos as usize] += 1;
+            if rows[pos as usize] >= 32 {
+                break 'outer_y;
+            }
+        }
+        rows.fill(0);
+    }
+    (1..W as u32)
+        .map(|i| (it_x + i * W as u32) - it_y)
+        .find(|n| *n % H as u32 == 0)
+        .unwrap()
+        + it_y
+}
 
 #[cfg(test)]
 mod tests {
@@ -171,5 +227,6 @@ mod tests {
     fn part2_example() {
         assert_eq!(part2(INPUT), 7709);
         assert_eq!(part2simd(INPUT), 7709);
+        assert_eq!(part2autovec(INPUT), 7709);
     }
 }
