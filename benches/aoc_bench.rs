@@ -165,18 +165,36 @@ fn aoc_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("Day14 - Part2");
 
     {
-        let runner = Factory::day14_part2_d14p2(input_day14.clone())
-            .expect("failed to generate input for d14p2");
-        group.bench_function("d14p2", move |b| b.iter(|| runner.bench(black_box)));
+        let runner = Factory::day14_part2_d14p2autovec(input_day14.clone())
+            .expect("failed to generate input for d14p2autovec");
+        group.bench_function("d14p2autovec", move |b| b.iter(|| runner.bench(black_box)));
     }
 
     group.finish();
     let mut group = c.benchmark_group("Day14 - Part2");
 
     {
-        let runner = Factory::day14_part2_d14p2autovec(input_day14.clone())
-            .expect("failed to generate input for d14p2autovec");
-        group.bench_function("d14p2autovec", move |b| b.iter(|| runner.bench(black_box)));
+        let runner = Factory::day14_part2_d14p2autovec2(input_day14.clone())
+            .expect("failed to generate input for d14p2autovec2");
+        group.bench_function("d14p2autovec2", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day14 - Part2");
+
+    {
+        let runner = Factory::day14_part2_d14p2base(input_day14.clone())
+            .expect("failed to generate input for d14p2base");
+        group.bench_function("d14p2base", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day14 - Part2");
+
+    {
+        let runner = Factory::day14_part2_d14p2official(input_day14.clone())
+            .expect("failed to generate input for d14p2official");
+        group.bench_function("d14p2official", move |b| b.iter(|| runner.bench(black_box)));
     }
 
     group.finish();
