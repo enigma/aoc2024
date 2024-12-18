@@ -1,7 +1,6 @@
 use aoc_runner_derive::aoc;
 use arrayvec::ArrayVec;
 use std::simd::cmp::SimdPartialOrd;
-use std::simd::prelude::SimdPartialEq;
 use std::simd::Simd;
 
 type Int = i64;

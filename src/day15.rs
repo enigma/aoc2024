@@ -36,7 +36,6 @@ fn parse1(input: &str) -> (Grid<50, 50>, Pos, Vec<Dir>) {
 }
 
 const EMPTY: u8 = b'.';
-const WALL: u8 = b'#';
 const STONE: u8 = b'O';
 const STONE_L: u8 = b'[';
 const STONE_R: u8 = b']';
@@ -185,8 +184,6 @@ fn mover(grid: &mut Grid<50, 100>, cy: isize, cx: isize, dy: isize, dx: isize) {
 #[aoc(day15, part2, d15p2)]
 pub fn part2(input: &str) -> u32 {
     let (mut grid, me, dirs) = parse2(input);
-    let height = grid.len();
-    let width = grid[0].len();
     let (mut my, mut mx) = (me.0 as isize, me.1 as isize);
     for (dy, dx) in dirs {
         let (cy, cx) = (my, mx);
