@@ -120,11 +120,13 @@ fn parse_trie(input: &str) -> ParsedTrie {
     (root, designs)
 }
 
-fn solve_trie(parsed_trie: ParsedTrie, reduce_fn: impl Fn(u64, u64) -> u64) -> u64 {
+fn solve_trie(parsed_trie: ParsedTrie) -> (u64, u64) {
     let (root, designs) = parsed_trie;
 
     let mut dp = [0u64; 104];
 
+    let mut count = 0;
+    let mut ways = 0;
     designs
         .iter()
         .map(|&design| {
@@ -147,18 +149,23 @@ fn solve_trie(parsed_trie: ParsedTrie, reduce_fn: impl Fn(u64, u64) -> u64) -> u
             }
             dp[0]
         })
-        .reduce(reduce_fn)
-        .unwrap()
+        .filter(|&count| count > 0)
+        .for_each(|val| {
+            count += 1;
+            ways += val;
+        });
+
+    (count, ways)
 }
 
 #[aoc(day19, part1, day19_part1trie)]
 pub fn part1trie(input: &str) -> u64 {
-    solve_trie(parse_trie(input), |a, b| a + if b > 0 { 1 } else { 0 })
+    solve_trie(parse_trie(input)).0
 }
 
 #[aoc(day19, part2, day19_part2trie)]
 pub fn part2trie(input: &str) -> u64 {
-    solve_trie(parse_trie(input), |a, b| a + b)
+    solve_trie(parse_trie(input)).1
 }
 
 pub fn part1(input: &str) -> u64 {
