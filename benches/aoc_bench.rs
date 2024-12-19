@@ -29,6 +29,8 @@ fn aoc_benchmark(c: &mut Criterion) {
 
     let input_day17 = ArcStr::from(include_str!("../input/2024/day17.txt"));
 
+    let input_day19 = ArcStr::from(include_str!("../input/2024/day19.txt"));
+
     let input_day2 = ArcStr::from(include_str!("../input/2024/day2.txt"));
 
     let input_day3 = ArcStr::from(include_str!("../input/2024/day3.txt"));
@@ -247,6 +249,42 @@ fn aoc_benchmark(c: &mut Criterion) {
     }
 
     group.finish();
+    let mut group = c.benchmark_group("Day19 - Part1");
+
+    {
+        let runner = Factory::day19_part1_day19_part1base(input_day19.clone())
+            .expect("failed to generate input for day19_part1base");
+        group.bench_function("day19_part1base", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day19 - Part1");
+
+    {
+        let runner = Factory::day19_part1_day19_part1trie(input_day19.clone())
+            .expect("failed to generate input for day19_part1trie");
+        group.bench_function("day19_part1trie", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day19 - Part2");
+
+    {
+        let runner = Factory::day19_part2_day19_part2base(input_day19.clone())
+            .expect("failed to generate input for day19_part2base");
+        group.bench_function("day19_part2base", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day19 - Part2");
+
+    {
+        let runner = Factory::day19_part2_day19_part2trie(input_day19.clone())
+            .expect("failed to generate input for day19_part2trie");
+        group.bench_function("day19_part2trie", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
     let mut group = c.benchmark_group("Day2 - Part1");
 
     {
@@ -385,6 +423,7 @@ fn input_benchmark(c: &mut Criterion) {
     let input_day14 = ArcStr::from(include_str!("../input/2024/day14.txt"));
     let input_day15 = ArcStr::from(include_str!("../input/2024/day15.txt"));
     let input_day17 = ArcStr::from(include_str!("../input/2024/day17.txt"));
+    let input_day19 = ArcStr::from(include_str!("../input/2024/day19.txt"));
     let input_day2 = ArcStr::from(include_str!("../input/2024/day2.txt"));
     let input_day3 = ArcStr::from(include_str!("../input/2024/day3.txt"));
     let input_day7 = ArcStr::from(include_str!("../input/2024/day7.txt"));
