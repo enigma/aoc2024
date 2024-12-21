@@ -14,12 +14,12 @@ fn parse(input: &str) -> ArrayVec<usize, 5> {
         .collect()
 }
 
-#[aoc(day21, part1)]
+#[aoc(day21, part1, d21p1)]
 pub fn part1(input: &str) -> u64 {
     parse(input).iter().map(|&i| LUT_1_FULL[i]).sum()
 }
 
-#[aoc(day21, part2)]
+#[aoc(day21, part2, d21p2)]
 pub fn part2(input: &str) -> u64 {
     parse(input).iter().map(|&i| LUT_2_FULL[i]).sum()
 }
