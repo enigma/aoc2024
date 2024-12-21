@@ -1,14 +1,14 @@
 use aoc_runner_derive::aoc;
 
+#[inline(always)]
 fn parse(input: &str) -> [usize; 5] {
+    let bytes = input.as_bytes();
     let mut result = [0; 5];
-    let mut i = 0;
-    for line in input.trim_ascii_end().lines() {
-        result[i] = line[..3]
-            .as_bytes()
-            .iter()
-            .fold(0, |acc, &c| acc * 10 + (c - b'0') as usize);
-        i += 1;
+    for i in 0..5 {
+        let s = i * 5;
+        result[i] = (bytes[s] - b'0') as usize * 100
+            + (bytes[s + 1] - b'0') as usize * 10
+            + (bytes[s + 2] - b'0') as usize;
     }
     result
 }
