@@ -308,18 +308,18 @@ fn aoc_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("Day21 - Part1");
 
     {
-        let runner = Factory::day21_part1_base(input_day21.clone())
-            .expect("failed to generate input for base");
-        group.bench_function("base", move |b| b.iter(|| runner.bench(black_box)));
+        let runner = Factory::day21_part1_d21p1(input_day21.clone())
+            .expect("failed to generate input for d21p1");
+        group.bench_function("d21p1", move |b| b.iter(|| runner.bench(black_box)));
     }
 
     group.finish();
     let mut group = c.benchmark_group("Day21 - Part2");
 
     {
-        let runner = Factory::day21_part2_base(input_day21.clone())
-            .expect("failed to generate input for base");
-        group.bench_function("base", move |b| b.iter(|| runner.bench(black_box)));
+        let runner = Factory::day21_part2_d21p2(input_day21.clone())
+            .expect("failed to generate input for d21p2");
+        group.bench_function("d21p2", move |b| b.iter(|| runner.bench(black_box)));
     }
 
     group.finish();
