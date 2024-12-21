@@ -1,17 +1,16 @@
 use aoc_runner_derive::aoc;
-use arrayvec::ArrayVec;
 
-fn parse(input: &str) -> ArrayVec<usize, 5> {
-    input
-        .trim_ascii_end()
-        .lines()
-        .map(|line| {
-            line[..3]
-                .as_bytes()
-                .iter()
-                .fold(0, |acc, &c| acc * 10 + (c - b'0') as usize)
-        })
-        .collect()
+fn parse(input: &str) -> [usize; 5] {
+    let mut result = [0; 5];
+    let mut i = 0;
+    for line in input.trim_ascii_end().lines() {
+        result[i] = line[..3]
+            .as_bytes()
+            .iter()
+            .fold(0, |acc, &c| acc * 10 + (c - b'0') as usize);
+        i += 1;
+    }
+    result
 }
 
 #[aoc(day21, part1, d21p1)]
