@@ -1,7 +1,4 @@
-use std::collections::hash_map::Entry;
-
 use aoc_runner_derive::aoc;
-use rustc_hash::FxHashMap;
 
 fn parse(input: &str) -> Vec<u64> {
     let mut res = Vec::with_capacity(1 << 12);
@@ -15,6 +12,7 @@ fn parse(input: &str) -> Vec<u64> {
     res
 }
 
+#[inline(always)]
 fn next_secret(secret: u64) -> u64 {
     let mut secret = (secret ^ (secret * 64)) % 16777216;
     secret = (secret ^ (secret / 32)) % 16777216;
@@ -35,13 +33,11 @@ pub fn part1(input: &str) -> u64 {
 #[aoc(day22, part2, p2base)]
 pub fn part2base(input: &str) -> u64 {
     let mut secrets = parse(input);
-    let mut counter: FxHashMap<_, _> = FxHashMap::default();
-    // let mut counter = [0; CACHE_SIZE];
+    let mut counter = [0; CACHE_SIZE];
     let mut result = 0;
-    let mut caches: Vec<FxHashMap<u64, u64>> =
-        vec![FxHashMap::with_capacity_and_hasher(1 << 10, Default::default()); secrets.len()];
-    let mut hashes = vec![0; secrets.len()];
-    let mask = (1 << 20) - 1;
+    let mut caches: Vec<[u64; (CACHE_SIZE + 63) / 64]> =
+        vec![[0; (CACHE_SIZE + 63) / 64]; secrets.len()];
+    let mut hashes = vec![[0u64; 4]; secrets.len()];
 
     for i in 0..2000 {
         secrets
@@ -51,15 +47,17 @@ pub fn part2base(input: &str) -> u64 {
             .for_each(|((secret, cache), hash)| {
                 let was = *secret;
                 *secret = next_secret(*secret);
-                let delta = 10 + (*secret % 10) - (was % 10);
-                *hash = ((*hash << 5) + delta) & mask;
+                let delta = 9 + (*secret % 10) - (was % 10);
+                hash.iter_mut().for_each(|h| *h *= 19);
+                hash[i % 4] = delta;
                 if i >= 4 {
-                    if let Entry::Vacant(ee) = cache.entry(*hash) {
-                        let s = *secret % 10;
-                        ee.insert(s);
-                        let e = counter.entry(*hash).or_insert(0);
-                        *e += s;
-                        result = result.max(*e);
+                    let seen_hash = hash.iter().sum::<u64>() as usize;
+                    let idx = seen_hash / 64;
+                    let bit = seen_hash % 64;
+                    if cache[idx] & (1 << bit) == 0 {
+                        cache[idx] |= 1 << bit;
+                        counter[seen_hash] += *secret % 10;
+                        result = result.max(counter[seen_hash]);
                     }
                 }
             });
@@ -117,5 +115,6 @@ mod tests {
     fn part2_example() {
         assert_eq!(part2(INPUT), 2089);
         assert_eq!(part2inv(INPUT), 2089);
+        assert_eq!(part2base(INPUT), 2089);
     }
 }
