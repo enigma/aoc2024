@@ -337,6 +337,24 @@ fn aoc_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("Day22 - Part2");
 
     {
+        let runner = Factory::day22_part2_d22p2inv(input_day22.clone())
+            .expect("failed to generate input for d22p2inv");
+        group.bench_function("d22p2inv", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day22 - Part2");
+
+    {
+        let runner = Factory::day22_part2_d22p2selected(input_day22.clone())
+            .expect("failed to generate input for d22p2selected");
+        group.bench_function("d22p2selected", move |b| b.iter(|| runner.bench(black_box)));
+    }
+
+    group.finish();
+    let mut group = c.benchmark_group("Day22 - Part2");
+
+    {
         let runner = Factory::day22_part2_p2base(input_day22.clone())
             .expect("failed to generate input for p2base");
         group.bench_function("p2base", move |b| b.iter(|| runner.bench(black_box)));

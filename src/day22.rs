@@ -33,7 +33,7 @@ pub fn part1(input: &str) -> u64 {
 }
 
 #[aoc(day22, part2, p2base)]
-pub fn part2(input: &str) -> u64 {
+pub fn part2base(input: &str) -> u64 {
     let mut secrets = parse(input);
     let mut counter: FxHashMap<_, _> = FxHashMap::default();
     let mut result = 0;
@@ -66,6 +66,40 @@ pub fn part2(input: &str) -> u64 {
     result
 }
 
+#[aoc(day22, part2, d22p2selected)]
+pub fn part2(input: &str) -> u64 {
+    part2inv(input)
+}
+
+const CACHE_SIZE: usize = 19 * 19 * 19 * 19 + 7;
+#[allow(unused_assignments)]
+#[aoc(day22, part2, d22p2inv)]
+pub fn part2inv(input: &str) -> u64 {
+    let mut secrets = parse(input);
+    let mut counter = [0; CACHE_SIZE];
+    let mut seen = [false; CACHE_SIZE];
+    let mut result = 0;
+    secrets.iter_mut().for_each(|secret| {
+        seen.fill(false);
+        let (mut a, mut b, mut c, mut d) = (0, 0, 0, 0);
+        for i in 0..2000 {
+            let was = *secret;
+            *secret = next_secret(*secret);
+            let delta = 9 + (*secret % 10) - (was % 10);
+            (a, b, c, d) = (b * 19, c * 19, d * 19, delta);
+            let seen_hash = (a + b + c + d) as usize;
+            if i >= 4 {
+                if !seen[seen_hash] {
+                    seen[seen_hash] = true;
+                    counter[seen_hash] += *secret % 10;
+                    result = result.max(counter[seen_hash]);
+                }
+            }
+        }
+    });
+    result
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -79,5 +113,6 @@ mod tests {
     #[test]
     fn part2_example() {
         assert_eq!(part2(INPUT), 2089);
+        assert_eq!(part2inv(INPUT), 2089);
     }
 }
